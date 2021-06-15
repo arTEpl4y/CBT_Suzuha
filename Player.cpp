@@ -4,10 +4,13 @@
 
 Player::Player(int X_pos, int Y_pos, sf::Texture *texture, sf::RenderWindow *window, Difficulty diff)
         :Entity(X_pos, Y_pos, texture, window){
-    speed = diff*10;
+    speed = diff*20;
 }
 
 void Player::Update(float deltaTime){
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift)){
+        deltaTime = deltaTime/2;
+    }
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up)){
         sprite.move(0, -speed*deltaTime);
     }

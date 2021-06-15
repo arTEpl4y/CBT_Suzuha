@@ -6,8 +6,6 @@
 
 class Player : public Entity{
 private:
-    int i_direction;
-    int p_direction;
 
 public:
     Player(int X_pos, int Y_pos, sf::Texture *texture, sf::RenderWindow *window, Difficulty diff);

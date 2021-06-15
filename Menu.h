@@ -10,7 +10,6 @@
 class Menu{
 private:
     Button* start_game;
-    Button* high_scores;
     Button* difficulties;
     Button* difficulties_easy;
     Button* difficulties_normal;
@@ -19,19 +18,15 @@ private:
     Button* quit;
     sf::RenderWindow* window;
     sf::Font* font;
-    sf::Text* score_count;
     sf::Text* fps_counter;
-    sf::Text* score_text;
     bool start_game_requested{}, quit_requested{};
-    bool inScoreView{}, inDifficultyView = false;
+    bool inDifficultyView = false;
 
 public:
     Menu(sf::RenderWindow* window);
     ~Menu();
-    void UpdateScoreText(int score);
     void UpdateFPS(float deltaTime);
     //void SaveHighscore();
-    void ShowHighscores();
     void Draw();
     void CheckButtonPresses(sf::Event::MouseButtonEvent* mouse_event);
     bool RequestedQuit();

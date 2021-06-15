@@ -18,13 +18,11 @@ void Game::DebugView() const{
     menu->UpdateFPS(deltaTime);
 }
 
-void Game::Init(){
-    window = new sf::RenderWindow(sf::VideoMode(800, 600), "Snake", sf::Style::Close);
+void Game::Init(){//start okna
+    window = new sf::RenderWindow(sf::VideoMode(800, 600), "CBT Suzuha", sf::Style::Close);
     window->setFramerateLimit(30);
 
-    head_t.loadFromFile("../Textures/head.png");
-    body_t.loadFromFile("../Textures/body.png");
-    food_t.loadFromFile("../Textures/food.png");
+    player_t.loadFromFile("../Textures/player.png");
     wall_t.loadFromFile("../Textures/wall.png");
 
     wall_top = new Entity(300, 5, &wall_t, window);
@@ -42,7 +40,7 @@ void Game::Init(){
     endOfFrameTime = getMilliseconds();
 }
 
-void Game::Update(){
+void Game::Update(){//logika gry
     endOfFrameTime = getMilliseconds();
     deltaTime = (endOfFrameTime-current_time).count()*0.001;
     current_time = getMilliseconds();
@@ -73,118 +71,46 @@ void Game::Update(){
     }
 
     if(isGameRunning){
-        head->Update(deltaTime);
-
-        if(head->checkCollision(wall_top) || head->checkCollision(wall_right) ||
-           head->checkCollision(wall_bottom) || head->checkCollision(wall_left)){
-            game_over = true;
-        }
-
-        for(auto i:body_vec){
-            i->Update(deltaTime);
-            if(i->kimi_no_na_wa != head && head->checkCollision(i)){
-                game_over = true;
-            }
-        }
+        player->Update(deltaTime);
 
         if(game_over){
             Stop();
             return;
         }
-
-        for(auto i:food_vec){
-            if(head->checkCollision(i)){
-                i->Spawn();
-                if(body_vec.size() == 0){
-                    body_vec.push_back(new Body(head->GetEntityX_pos(), head->GetEntityY_pos(), &body_t, window,
-                                                difficulty, head));
-                }else{
-                    body_vec.push_back(new Body(body_vec[body_vec.size()-1]->GetEntityX_pos(),
-                                                body_vec[body_vec.size()-1]->GetEntityY_pos(),
-                                                &body_t, window, difficulty, body_vec[body_vec.size()-1]));
-                }
-                score += 100;
-                menu->UpdateScoreText(score);
-            }
-        }
-
-        a++;
-        if(a >= 20 && b > 0){
-            a = 0;
-            b--;
-            if(body_vec.size() == 0){
-                body_vec.push_back(new Body(head->GetEntityX_pos(), head->GetEntityY_pos(), &body_t, window,
-                                            difficulty, head));
-            }else{
-                body_vec.push_back(new Body(body_vec[body_vec.size()-1]->GetEntityX_pos(), body_vec[body_vec.size
-                                                    ()-1]->GetEntityY_pos(), &body_t,
-                                            window, difficulty, body_vec[body_vec.size()-1]));
-            }
-        }
     }
 }
 
-void Game::Draw(){
-    window->clear(sf::Color(64, 64, 64));
+void Game::Draw(){//self-explanatory
+    window->clear(sf::Color(128, 32, 32));
     menu->Draw();
     wall_left->Draw();
     wall_right->Draw();
     wall_top->Draw();
     wall_bottom->Draw();
     if(isGameRunning){
-        for(auto i : food_vec){
-            i->Draw();
-        }
-        head->Draw();
-        for(auto i : body_vec){
-            i->Draw();
-        }
+        player->Draw();
     }
     window->display();
 }
 
-bool Game::isWindowOpen(){
+bool Game::isWindowOpen(){//self-explanatory
     return window->isOpen();
 }
 
-std::chrono::milliseconds Game::getMilliseconds(){
+std::chrono::milliseconds Game::getMilliseconds(){//nie wiem
     return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
 }
 
-void Game::StartGame(){
+void Game::StartGame(){//tworzenie stuffu
     isGameRunning = true;
-
-    b = 2;
 
     difficulty = menu->selected_difficulty;
 
-    score = 0;
-    menu->UpdateScoreText(score);
-
-    food_vec = {};
-
-    for(int i = 0; i < 5; i++){
-        food_vec.push_back(new Food(0, 0, &food_t, window));
-    }
-    for(int i = 0; i < 5; i++){
-        food_vec[i]->Spawn();
-    }
-
-    head = new Head(300, 300, &head_t, window, difficulty);
-
-    body_vec = {};
+    player = new Player(300, 300, &player_t, window, difficulty);
 }
 
-void Game::Stop(){
+void Game::Stop(){//self-explanatory
     isGameRunning = false;
-    delete head;
-    head = nullptr;
-    for(auto p:food_vec){
-        delete p;
-    }
-    for(auto p:body_vec){
-        delete p;
-    }
-    food_vec.clear();
-    body_vec.clear();
+    delete player;
+    player = nullptr;
 }

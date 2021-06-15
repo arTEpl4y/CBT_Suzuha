@@ -5,27 +5,23 @@
 #include <iostream>
 
 #include "Head.h"
+#include "Player.h"
 #include "Food.h"
 #include "Menu.h"
 
 class Game{
 private:
     float deltaTime{};
-    sf::Texture head_t, body_t, food_t, wall_t;
+    sf::Texture player_t, wall_t;
     Entity* wall_top{};
     Entity* wall_right{};
     Entity* wall_bottom{};
     Entity* wall_left{};
     sf::RenderWindow* window{};
     Menu* menu{};
-    std::vector<Food*> food_vec;
-    Head* head{};
-    std::vector<Body*> body_vec;
+    Player* player{};
     std::chrono::milliseconds current_time = getMilliseconds();
     std::chrono::milliseconds endOfFrameTime = getMilliseconds();
-    int a = 0;
-    int b = 2;
-    int score{};
     Difficulty difficulty;
     bool isGameRunning{};
 

@@ -1,5 +1,14 @@
-#include <iostream>
+#include "Game.h"
 
 int main(){
-    std::cout << "Hello, World!" << std::endl;
+    Game* game = new Game();
+    game->Init();
+
+    while(game->isWindowOpen()){
+        game->DebugView();
+        game->Update();
+        game->Draw();
+    }
+
+    delete game;
 }

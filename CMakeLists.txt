@@ -31,7 +31,7 @@ endif(WIN32)
 # wcześniej katalogów - nie ma potrzeby robienia potem if-a dla target_link_libraries
 find_package(SFML 2 COMPONENTS graphics audio REQUIRED)
 
-add_executable(CBT_Suzuha main.cpp)
+add_executable(CBT_Suzuha main.cpp Point.cpp Point.h Entity.cpp Entity.h Body.cpp Body.h Button.cpp Button.h Difficulty.h Food.cpp Food.h Game.cpp Game.h Head.cpp Head.h Menu.cpp Menu.h)
 
 target_link_libraries(CBT_Suzuha sfml-graphics sfml-audio)
 

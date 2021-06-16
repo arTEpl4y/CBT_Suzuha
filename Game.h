@@ -3,14 +3,17 @@
 
 #include <chrono>
 #include <iostream>
+#include <deque>
 
 #include "Player.h"
+#include "Bullet.h"
 #include "Menu.h"
 
 class Game{
 private:
     float deltaTime{};
-    sf::Texture player_t, wall_t;
+    int timer;
+    sf::Texture player_t, bullet_t, wall_t;
     Entity* wall_top{};
     Entity* wall_right{};
     Entity* wall_bottom{};
@@ -18,6 +21,7 @@ private:
     sf::RenderWindow* window{};
     Menu* menu{};
     Player* player{};
+    std::deque<Bullet*> player_bullet_vec;
     std::chrono::milliseconds current_time = getMilliseconds();
     std::chrono::milliseconds endOfFrameTime = getMilliseconds();
     Difficulty difficulty;

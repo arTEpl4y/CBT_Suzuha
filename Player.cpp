@@ -4,7 +4,7 @@
 
 Player::Player(int X_pos, int Y_pos, sf::Texture *texture, sf::RenderWindow *window, Difficulty diff)
         :Entity(X_pos, Y_pos, texture, window){
-    speed = diff*50;
+    speed = diff;
 }
 
 void Player::Update(float deltaTime){
@@ -24,8 +24,7 @@ void Player::Update(float deltaTime){
         sprite.move(speed*deltaTime, 0);
     }
 
-    point.X = sprite.getPosition().x;
-    point.Y = sprite.getPosition().y;
+
 }
 
 bool Player::checkCollision(Entity *entity){

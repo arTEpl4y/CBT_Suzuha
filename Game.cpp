@@ -23,6 +23,7 @@ void Game::Init(){//start okna
     window->setFramerateLimit(30);
 
     player_t.loadFromFile("../Textures/player.png");
+    bullet_t.loadFromFile("../Textures/bullet.png");
     wall_t.loadFromFile("../Textures/wall.png");
 
     wall_top = new Entity(300, 5, &wall_t, window);
@@ -72,6 +73,15 @@ void Game::Update(){//logika gry
 
     if(isGameRunning){
         player->Update(deltaTime);
+            player_bullet_vec.push_back(
+                    new Bullet(player->sprite.getPosition().x, player->sprite.getPosition().y, &bullet_t, window));
+        for(auto i : player_bullet_vec){
+            i->Update(deltaTime);
+            if(i->checkCollision(wall_top)){
+                player_bullet_vec.erase(player_bullet_vec.begin());
+            }
+        }
+
 
         if(game_over){
             Stop();
@@ -88,6 +98,9 @@ void Game::Draw(){//self-explanatory
     wall_top->Draw();
     wall_bottom->Draw();
     if(isGameRunning){
+        for(auto i : player_bullet_vec){
+            i->Draw();
+        }
         player->Draw();
     }
     window->display();
@@ -113,4 +126,8 @@ void Game::Stop(){//self-explanatory
     isGameRunning = false;
     delete player;
     player = nullptr;
+    for(auto i : player_bullet_vec){
+        delete i;
+    }
+    player_bullet_vec.clear();
 }

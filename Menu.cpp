@@ -5,10 +5,10 @@ Menu::Menu(sf::RenderWindow* window){
     font->loadFromFile("../arial.ttf");
 
     start_game = new Button(700, 400, 130, 50, sf::Color(128, 128, 128), "NEW GAME", font, window);
-    difficulties = new Button(700, 475, 130, 50, sf::Color(128, 128, 128), "LEVEL", font, window);
-    difficulties_easy = new Button(700, 325, 130, 50, sf::Color(128, 128, 128), "EASY", font, window);
-    difficulties_normal = new Button(700, 400, 130, 50, sf::Color(128, 128, 128), "NORMAL", font, window);
-    difficulties_hard= new Button(700, 475, 130, 50, sf::Color(128, 128, 128), "HARD", font, window);
+    difficulties = new Button(700, 475, 130, 50, sf::Color(128, 128, 128), "SPEED", font, window);
+    difficulties_easy = new Button(700, 325, 130, 50, sf::Color(128, 128, 128), "SLOW", font, window);
+    difficulties_normal = new Button(700, 400, 130, 50, sf::Color(128, 128, 128), "MEDIUM", font, window);
+    difficulties_hard= new Button(700, 475, 130, 50, sf::Color(128, 128, 128), "FAST", font, window);
     back = new Button(700, 550, 130, 50, sf::Color(128, 128, 128), "BACK", font, window);
     quit = new Button(700, 550, 130, 50, sf::Color(128, 128, 128), "QUIT", font, window);
     fps_counter = new sf::Text("FPS: ", *font, 12);

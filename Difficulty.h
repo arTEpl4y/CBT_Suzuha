@@ -4,7 +4,7 @@
 enum Difficulty {
     EASY = 1,
     NORMAL = 2,
-    HARD = 4};
-
+    HARD = 4
+};
 
 #endif

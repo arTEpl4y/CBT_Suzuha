@@ -4,9 +4,7 @@
 #include <chrono>
 #include <iostream>
 
-#include "Head.h"
 #include "Player.h"
-#include "Food.h"
 #include "Menu.h"
 
 class Game{

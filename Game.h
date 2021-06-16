@@ -7,13 +7,14 @@
 
 #include "Player.h"
 #include "Bullet.h"
+#include "Boss.h"
 #include "Menu.h"
 
 class Game{
 private:
     float deltaTime{};
     int timer;
-    sf::Texture player_t, bullet_t, wall_t;
+    sf::Texture player_t, bullet_t, boss_t, wall_t;
     Entity* wall_top{};
     Entity* wall_right{};
     Entity* wall_bottom{};
@@ -21,6 +22,7 @@ private:
     sf::RenderWindow* window{};
     Menu* menu{};
     Player* player{};
+    Boss* boss{};
     std::deque<Bullet*> player_bullet_vec;
     std::chrono::milliseconds current_time = getMilliseconds();
     std::chrono::milliseconds endOfFrameTime = getMilliseconds();
@@ -32,7 +34,7 @@ public:
     ~Game();
     void DebugView() const;
     void Init();
-    void Update();
+    void Update(int loop_timer);
     void Draw();
     bool isWindowOpen();
     std::chrono::milliseconds getMilliseconds();

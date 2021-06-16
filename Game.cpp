@@ -24,6 +24,7 @@ void Game::Init(){//start okna
 
     player_t.loadFromFile("../Textures/player.png");
     bullet_t.loadFromFile("../Textures/bullet.png");
+    boss_t.loadFromFile("../Textures/boss.png");
     wall_t.loadFromFile("../Textures/wall.png");
 
     wall_top = new Entity(300, 5, &wall_t, window);
@@ -41,7 +42,7 @@ void Game::Init(){//start okna
     endOfFrameTime = getMilliseconds();
 }
 
-void Game::Update(){//logika gry
+void Game::Update(int loop_timer){//logika gry
     endOfFrameTime = getMilliseconds();
     deltaTime = (endOfFrameTime-current_time).count()*0.001;
     current_time = getMilliseconds();
@@ -73,15 +74,13 @@ void Game::Update(){//logika gry
 
     if(isGameRunning){
         player->Update(deltaTime);
+        if(loop_timer%10 == 1){
             player_bullet_vec.push_back(
                     new Bullet(player->sprite.getPosition().x, player->sprite.getPosition().y, &bullet_t, window));
+        }
         for(auto i : player_bullet_vec){
             i->Update(deltaTime);
-            if(i->checkCollision(wall_top)){
-                player_bullet_vec.erase(player_bullet_vec.begin());
-            }
         }
-
 
         if(game_over){
             Stop();
@@ -91,7 +90,7 @@ void Game::Update(){//logika gry
 }
 
 void Game::Draw(){//self-explanatory
-    window->clear(sf::Color(128, 32, 32));
+    window->clear(sf::Color(32, 64, 128));
     menu->Draw();
     wall_left->Draw();
     wall_right->Draw();
@@ -102,6 +101,7 @@ void Game::Draw(){//self-explanatory
             i->Draw();
         }
         player->Draw();
+        boss->Draw();
     }
     window->display();
 }
@@ -119,13 +119,17 @@ void Game::StartGame(){//tworzenie stuffu
 
     difficulty = menu->selected_difficulty;
 
-    player = new Player(300, 300, &player_t, window, difficulty);
+    player = new Player(300, 500, &player_t, window, difficulty);
+
+    boss = new Boss(300, 100, &boss_t, window);
 }
 
 void Game::Stop(){//self-explanatory
     isGameRunning = false;
     delete player;
     player = nullptr;
+    delete boss;
+    boss = nullptr;
     for(auto i : player_bullet_vec){
         delete i;
     }

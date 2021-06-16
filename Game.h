@@ -34,12 +34,13 @@ public:
     ~Game();
     void DebugView() const;
     void Init();
-    void Update(int loop_timer);
+    void Update();
     void Draw();
     bool isWindowOpen();
     std::chrono::milliseconds getMilliseconds();
     void StartGame();
     void Stop();
+    int Bullet_spawn_cooldown = 0;
 };
 
 #endif

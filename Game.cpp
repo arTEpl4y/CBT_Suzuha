@@ -42,10 +42,11 @@ void Game::Init(){//start okna
     endOfFrameTime = getMilliseconds();
 }
 
-void Game::Update(int loop_timer){//logika gry
+void Game::Update(){//logika gry
     endOfFrameTime = getMilliseconds();
     deltaTime = (endOfFrameTime-current_time).count()*0.001;
     current_time = getMilliseconds();
+    Bullet_spawn_cooldown += 1;
 
     bool game_over = false;
 
@@ -74,9 +75,10 @@ void Game::Update(int loop_timer){//logika gry
 
     if(isGameRunning){
         player->Update(deltaTime);
-        if(loop_timer%10 == 1){
+        if(Bullet_spawn_cooldown > 5){
             player_bullet_vec.push_back(
                     new Bullet(player->sprite.getPosition().x, player->sprite.getPosition().y, &bullet_t, window));
+            Bullet_spawn_cooldown = 0;
         }
         for(auto i : player_bullet_vec){
             i->Update(deltaTime);
@@ -90,7 +92,7 @@ void Game::Update(int loop_timer){//logika gry
 }
 
 void Game::Draw(){//self-explanatory
-    window->clear(sf::Color(32, 64, 128));
+    window->clear(sf::Color(32, 92, 32));
     menu->Draw();
     wall_left->Draw();
     wall_right->Draw();

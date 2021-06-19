@@ -12,14 +12,6 @@ Entity::~Entity(){
 
 }
 
-int Entity::GetEntityX_pos() const{
-    return point.X;
-}
-
-int Entity::GetEntityY_pos() const{
-    return point.Y;
-}
-
 float Entity::GetEntity_width() const{
     return sprite.getGlobalBounds().width;
 }

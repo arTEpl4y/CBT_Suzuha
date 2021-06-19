@@ -8,7 +8,7 @@ Player::Player(int X_pos, int Y_pos, sf::Texture *texture, sf::RenderWindow *win
 }
 
 void Player::Update(float deltaTime){
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift)){
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Z)){
         deltaTime = deltaTime/2;
     }
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up)){
@@ -23,6 +23,4 @@ void Player::Update(float deltaTime){
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right)){
         sprite.move(speed*deltaTime, 0);
     }
-
-
 }

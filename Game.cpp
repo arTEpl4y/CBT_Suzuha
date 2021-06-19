@@ -19,14 +19,17 @@ void Game::DebugView() const{
 }
 
 void Game::Init(){//start okna
-    window = new sf::RenderWindow(sf::VideoMode(800, 600), "CBT Suzuha", sf::Style::Close);
-    window->setFramerateLimit(60);
+    icon.loadFromFile("../Files/super_ikonka_super_gierki.png");
+    wall_t.loadFromFile("../Files/wall.png");
+    player_t.loadFromFile("../Files/player.png");
+    bullet_t.loadFromFile("../Files/bullet.png");
+    boss_t.loadFromFile("../Files/boss.png");
+    boss_hp_bar_t.loadFromFile("../Files/hp_bar.png");
+    spiritfire_t.loadFromFile("../Files/spiritfire2.png");
 
-    player_t.loadFromFile("../Textures/player.png");
-    bullet_t.loadFromFile("../Textures/bullet.png");
-    boss_t.loadFromFile("../Textures/boss.png");
-    boss_hp_bar_t.loadFromFile("../Textures/hp_bar.png");
-    wall_t.loadFromFile("../Textures/wall.png");
+    window = new sf::RenderWindow(sf::VideoMode(800, 600), "CBT Suzuha", sf::Style::Close);
+    window->setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
+    window->setFramerateLimit(60);
 
     wall_top = new Entity(300, 5, &wall_t, window);
     wall_right = new Entity(595, 300, &wall_t, window);
@@ -47,7 +50,6 @@ void Game::Update(){//logika gry
     endOfFrameTime = getMilliseconds();
     deltaTime = (endOfFrameTime-current_time).count()*0.001;
     current_time = getMilliseconds();
-    Bullet_spawn_cooldown += 1;
 
     bool game_over = false;
 
@@ -88,17 +90,16 @@ void Game::Update(){//logika gry
         if(player->checkCollision(wall_right)){
             player->sprite.move(-player->speed*deltaTime, 0);
         }
-        if(player->checkCollision(boss)){
-            game_over = true;
-        }
-
-        if(Bullet_spawn_cooldown > 10){
-            player_bullet_vec.push_back(
-                    new Bullet(player->sprite.getPosition().x, player->sprite.getPosition().y, &bullet_t, window));
-            Bullet_spawn_cooldown = 0;
+        boss->Update(deltaTime);
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::X)){
+            if (Bullet_spawn_cooldown > 10){
+                player_bullet_vec.push_back(
+                        new Entity(player->sprite.getPosition().x, player->sprite.getPosition().y, &bullet_t, window));
+                Bullet_spawn_cooldown = 0;
+            }
         }
         for(size_t i = 0; i < player_bullet_vec.size(); i++){
-            player_bullet_vec[i]->Update(deltaTime);
+            player_bullet_vec[i]->sprite.move(0, -5);
             if(boss->checkCollision(player_bullet_vec[i])){
                 player_bullet_vec.erase(player_bullet_vec.begin()+i);
                 boss->hitpoints -= 1;
@@ -108,12 +109,39 @@ void Game::Update(){//logika gry
                 player_bullet_vec.erase(player_bullet_vec.begin()+i);
             }
         }
+        if(spiritfire_cd > 120){
+            if(spiritfire_cd2 == 10 || spiritfire_cd2 == 20 || spiritfire_cd2 == 30){
+                spiritfire_vec.push_back(
+                    new Entity(boss->sprite.getPosition().x, boss->sprite.getPosition().y, &spiritfire_t, window));
+            }
+            if(spiritfire_cd2 > 30){
+                spiritfire_cd = 0;
+                spiritfire_cd2 = 0;
+            }
+            spiritfire_cd2 += 1;
+        }
+        for(size_t i = 0; i < spiritfire_vec.size(); i++){
+            spiritfire_vec[i]->sprite.move(0, 5);
+            if(spiritfire_vec[i]->checkCollision(player)){
+                game_over = true;
+            }
+            if(wall_bottom->checkCollision(spiritfire_vec[i])){
+                spiritfire_vec.erase(spiritfire_vec.begin()+i);
+            }
+        }
+
+        if(player->checkCollision(boss)){
+            game_over = true;
+        }
 
         if(game_over){
             Stop();
             return;
         }
     }
+
+    Bullet_spawn_cooldown += 1;
+    spiritfire_cd += 1;
 }
 
 void Game::Draw(){//self-explanatory
@@ -125,6 +153,9 @@ void Game::Draw(){//self-explanatory
     wall_bottom->Draw();
     if(isGameRunning){
         for(auto i : player_bullet_vec){
+            i->Draw();
+        }
+        for(auto i : spiritfire_vec){
             i->Draw();
         }
         player->Draw();
@@ -150,8 +181,9 @@ void Game::StartGame(){//tworzenie stuffu
     player = new Player(300, 500, &player_t, window, difficulty);
 
     boss = new Boss(300, 100, &boss_t, window);
+    //boss->sprite.setScale(0.5945945945945946f, 0.5588235294117647f);
 
-    boss_hp_bar = new Entity(300, 9, &boss_hp_bar_t, window);
+    boss_hp_bar = new Entity(300, 2, &boss_hp_bar_t, window);
 }
 
 void Game::Stop(){//self-explanatory
@@ -164,4 +196,8 @@ void Game::Stop(){//self-explanatory
         delete i;
     }
     player_bullet_vec.clear();
+    for(auto i : spiritfire_vec){
+        delete i;
+    }
+    spiritfire_vec.clear();
 }

@@ -1,7 +1,7 @@
 #ifndef CBT_SUZUHA_GAME_H
 #define CBT_SUZUHA_GAME_H
 
-#include <SFML/Audio.hpp>
+#include <SFML/Audio/Music.hpp>
 #include <chrono>
 #include <iostream>
 #include <deque>
@@ -15,6 +15,7 @@ private:
     float deltaTime{};
     int timer;
     sf::Image icon;
+    sf::Music music;
     sf::Texture player_t, bullet_t, boss_t, wall_t, boss_hp_bar_t;
     sf::Texture spiritfire_t;
     Entity* wall_top{};

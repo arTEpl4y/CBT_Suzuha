@@ -20,6 +20,7 @@ void Game::DebugView() const{
 
 void Game::Init(){//start okna
     icon.loadFromFile("../Files/super_ikonka_super_gierki.png");
+    music.openFromFile("../Files/suzuha_ost.ogg");
     wall_t.loadFromFile("../Files/wall.png");
     player_t.loadFromFile("../Files/player.png");
     bullet_t.loadFromFile("../Files/bullet.png");
@@ -39,6 +40,10 @@ void Game::Init(){//start okna
     wall_left->sprite.setRotation(90);
 
     menu = new Menu(window);
+
+    music.setLoop(true);
+    music.setVolume(10);
+    music.play();
 
     isGameRunning = false;
 
@@ -110,11 +115,12 @@ void Game::Update(){//logika gry
             }
         }
         if(spiritfire_cd > 120){
-            if(spiritfire_cd2 == 10 || spiritfire_cd2 == 20 || spiritfire_cd2 == 30){
+            if(spiritfire_cd2 == 10 || spiritfire_cd2 == 20 || spiritfire_cd2 == 30|| spiritfire_cd2 == 40 ||
+            spiritfire_cd2 == 50){
                 spiritfire_vec.push_back(
                     new Entity(boss->sprite.getPosition().x, boss->sprite.getPosition().y, &spiritfire_t, window));
             }
-            if(spiritfire_cd2 > 30){
+            if(spiritfire_cd2 > 50){
                 spiritfire_cd = 0;
                 spiritfire_cd2 = 0;
             }
@@ -138,10 +144,11 @@ void Game::Update(){//logika gry
             Stop();
             return;
         }
+
+        Bullet_spawn_cooldown += 1;
+        spiritfire_cd += 1;
     }
 
-    Bullet_spawn_cooldown += 1;
-    spiritfire_cd += 1;
 }
 
 void Game::Draw(){//self-explanatory
@@ -177,6 +184,9 @@ void Game::StartGame(){//tworzenie stuffu
     isGameRunning = true;
 
     difficulty = menu->selected_difficulty;
+
+    Bullet_spawn_cooldown = 0;
+    spiritfire_cd = 0;
 
     player = new Player(300, 500, &player_t, window, difficulty);
 

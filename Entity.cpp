@@ -32,6 +32,15 @@ void Entity::Update(float deltaTime){
 
 }
 
+bool Entity::checkCollision(Entity *entity) {
+    float deltaX = sprite.getPosition().x - entity->sprite.getPosition().x;
+    float deltaY = sprite.getPosition().y - entity->sprite.getPosition().y;
+    float intersectX = abs(deltaX)-(GetEntity_width()*0.5f + entity->GetEntity_width()*0.5f);
+    float intersectY = abs(deltaY)-(GetEntity_height()*0.5f + entity->GetEntity_height()*0.5f);
+
+    return (intersectX<0 && intersectY<0);
+}
+
 void Entity::Draw(){
     window->draw(sprite);
 }

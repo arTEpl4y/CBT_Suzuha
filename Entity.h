@@ -17,6 +17,7 @@ public:
     float GetEntity_width() const;
     float GetEntity_height() const;
     virtual void Update(float deltaTime);
+    bool checkCollision(Entity *entity);
     void Draw();
     Point point;
     sf::Sprite sprite;

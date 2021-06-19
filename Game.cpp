@@ -75,13 +75,37 @@ void Game::Update(){//logika gry
 
     if(isGameRunning){
         player->Update(deltaTime);
+        if(player->checkCollision(wall_top)){
+            player->sprite.move(0, player->speed*deltaTime);
+        }
+        if(player->checkCollision(wall_bottom)){
+            player->sprite.move(0, -player->speed*deltaTime);
+        }
+        if(player->checkCollision(wall_left)){
+            player->sprite.move(player->speed*deltaTime, 0);
+        }
+        if(player->checkCollision(wall_right)){
+            player->sprite.move(-player->speed*deltaTime, 0);
+        }
+        if(player->checkCollision(boss)){
+            game_over = true;
+        }
+
         if(Bullet_spawn_cooldown > 5){
             player_bullet_vec.push_back(
                     new Bullet(player->sprite.getPosition().x, player->sprite.getPosition().y, &bullet_t, window));
             Bullet_spawn_cooldown = 0;
         }
-        for(auto i : player_bullet_vec){
-            i->Update(deltaTime);
+        for(size_t i = 0; i < player_bullet_vec.size(); i++){
+            player_bullet_vec[i]->Update(deltaTime);
+            if(boss->checkCollision(player_bullet_vec[i])){
+                boss->hitpoints -= 1;
+                std::cout << boss->hitpoints << std::endl;
+                player_bullet_vec.erase(player_bullet_vec.begin()+i);
+            }
+            if(wall_top->checkCollision(player_bullet_vec[i])){
+                player_bullet_vec.erase(player_bullet_vec.begin()+i);
+            }
         }
 
         if(game_over){

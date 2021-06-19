@@ -9,7 +9,6 @@ private:
 public:
     Bullet(int X_pos, int Y_pos, sf::Texture *texture, sf::RenderWindow *window);
     void Update(float deltaTime) override;
-    bool checkCollision(Entity *entity);
 };
 
 #endif

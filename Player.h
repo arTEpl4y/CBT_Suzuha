@@ -6,13 +6,12 @@
 
 class Player : public Entity{
 private:
-    int speed;
+
 
 public:
     Player(int X_pos, int Y_pos, sf::Texture *texture, sf::RenderWindow *window, Difficulty diff);
     void Update(float deltaTime) override;
-    bool checkCollision(Entity *entity);
-
+    int speed;
 };
 
 #endif

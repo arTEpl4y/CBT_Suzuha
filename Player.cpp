@@ -26,12 +26,3 @@ void Player::Update(float deltaTime){
 
 
 }
-
-bool Player::checkCollision(Entity *entity){
-    float deltaX = point.X - entity->point.X;
-    float deltaY = point.Y - entity->point.Y;
-    float intersectX = abs(deltaX)-(GetEntity_width()*0.5f + entity->GetEntity_width()*0.5f);
-    float intersectY = abs(deltaY)-(GetEntity_height()*0.5f + entity->GetEntity_height()*0.5f);
-
-    return (intersectX<0 && intersectY<0);
-}

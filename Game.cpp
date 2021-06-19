@@ -20,11 +20,12 @@ void Game::DebugView() const{
 
 void Game::Init(){//start okna
     window = new sf::RenderWindow(sf::VideoMode(800, 600), "CBT Suzuha", sf::Style::Close);
-    window->setFramerateLimit(30);
+    window->setFramerateLimit(60);
 
     player_t.loadFromFile("../Textures/player.png");
     bullet_t.loadFromFile("../Textures/bullet.png");
     boss_t.loadFromFile("../Textures/boss.png");
+    boss_hp_bar_t.loadFromFile("../Textures/hp_bar.png");
     wall_t.loadFromFile("../Textures/wall.png");
 
     wall_top = new Entity(300, 5, &wall_t, window);
@@ -91,7 +92,7 @@ void Game::Update(){//logika gry
             game_over = true;
         }
 
-        if(Bullet_spawn_cooldown > 5){
+        if(Bullet_spawn_cooldown > 10){
             player_bullet_vec.push_back(
                     new Bullet(player->sprite.getPosition().x, player->sprite.getPosition().y, &bullet_t, window));
             Bullet_spawn_cooldown = 0;
@@ -99,9 +100,9 @@ void Game::Update(){//logika gry
         for(size_t i = 0; i < player_bullet_vec.size(); i++){
             player_bullet_vec[i]->Update(deltaTime);
             if(boss->checkCollision(player_bullet_vec[i])){
-                boss->hitpoints -= 1;
-                std::cout << boss->hitpoints << std::endl;
                 player_bullet_vec.erase(player_bullet_vec.begin()+i);
+                boss->hitpoints -= 1;
+                boss_hp_bar->sprite.setScale(boss->hitpoints/boss->max_hitpoints*1.0f, 1);
             }
             if(wall_top->checkCollision(player_bullet_vec[i])){
                 player_bullet_vec.erase(player_bullet_vec.begin()+i);
@@ -116,7 +117,7 @@ void Game::Update(){//logika gry
 }
 
 void Game::Draw(){//self-explanatory
-    window->clear(sf::Color(32, 92, 32));
+    window->clear(sf::Color(32, 32, 32));
     menu->Draw();
     wall_left->Draw();
     wall_right->Draw();
@@ -128,6 +129,7 @@ void Game::Draw(){//self-explanatory
         }
         player->Draw();
         boss->Draw();
+        boss_hp_bar->Draw();
     }
     window->display();
 }
@@ -136,7 +138,7 @@ bool Game::isWindowOpen(){//self-explanatory
     return window->isOpen();
 }
 
-std::chrono::milliseconds Game::getMilliseconds(){//nie wiem
+std::chrono::milliseconds Game::getMilliseconds(){//full profeska
     return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
 }
 
@@ -148,6 +150,8 @@ void Game::StartGame(){//tworzenie stuffu
     player = new Player(300, 500, &player_t, window, difficulty);
 
     boss = new Boss(300, 100, &boss_t, window);
+
+    boss_hp_bar = new Entity(300, 9, &boss_hp_bar_t, window);
 }
 
 void Game::Stop(){//self-explanatory

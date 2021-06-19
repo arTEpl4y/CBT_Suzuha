@@ -9,7 +9,7 @@ private:
 public:
     Boss(int X_pos, int Y_pos, sf::Texture *texture, sf::RenderWindow *window);
     void Update(float deltaTime) override;
-    int hitpoints;
+    float max_hitpoints, hitpoints;
 };
 
 #endif

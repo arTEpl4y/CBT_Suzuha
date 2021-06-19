@@ -14,7 +14,7 @@ class Game{
 private:
     float deltaTime{};
     int timer;
-    sf::Texture player_t, bullet_t, boss_t, wall_t;
+    sf::Texture player_t, bullet_t, boss_t, wall_t, boss_hp_bar_t;
     Entity* wall_top{};
     Entity* wall_right{};
     Entity* wall_bottom{};
@@ -23,6 +23,7 @@ private:
     Menu* menu{};
     Player* player{};
     Boss* boss{};
+    Entity* boss_hp_bar{};
     std::deque<Bullet*> player_bullet_vec;
     std::chrono::milliseconds current_time = getMilliseconds();
     std::chrono::milliseconds endOfFrameTime = getMilliseconds();

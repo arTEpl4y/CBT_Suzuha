@@ -33,6 +33,8 @@ find_package(SFML 2 COMPONENTS graphics audio REQUIRED)
 
 add_executable(CBT_Suzuha main.cpp Point.cpp Point.h Entity.cpp Entity.h Button.cpp Button.h Difficulty.h Game.cpp Game.h Menu.cpp Menu.h Player.cpp Player.h Boss.cpp Boss.h)
 
+set(CMAKE_EXE_LINKER_FLAGS "-static")
+
 target_link_libraries(CBT_Suzuha sfml-graphics sfml-audio)
 
 # ABSOLUTNIE I W ŻADNYM WYPADKU nie dodawać wpisu include_directories(${SFML_PATH}/include/SFML/) !!!

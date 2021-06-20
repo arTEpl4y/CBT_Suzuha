@@ -7,7 +7,6 @@
 class Player : public Entity{
 private:
 
-
 public:
     Player(int X_pos, int Y_pos, sf::Texture *texture, sf::RenderWindow *window, Difficulty diff);
     void Update(float deltaTime) override;

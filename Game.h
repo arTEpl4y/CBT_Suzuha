@@ -17,8 +17,8 @@ private:
     int timer;
     sf::Image icon;
     sf::Music music;
-    sf::Texture player_t, hitbox_t, bullet_t, boss_t, wall_t, boss_hp_bar_t;
-    sf::Texture spiritfire_t, redfire_t, seal1_t, seal2_t;
+    sf::Texture player_t, hitbox_t, bullet_t, boss_t, bossr_t, wall_t, boss_hp_bar_t;
+    sf::Texture spiritfire_t, redfire_t, seal1_t, seal2_t, shieldm_t, shieldo_t;
     Entity* wall_top{};
     Entity* wall_right{};
     Entity* wall_bottom{};
@@ -30,7 +30,7 @@ private:
     Boss* boss{};
     Entity* boss_hp_bar{};
     std::deque<Entity*> player_bullet_vec;
-    std::deque<Entity*> spiritfire_vec, redfire_vec, seal_vec;
+    std::deque<Entity*> spiritfire_vec, redfire_vec, seal_vec, shield_vec;
     std::chrono::milliseconds current_time = getMilliseconds();
     std::chrono::milliseconds endOfFrameTime = getMilliseconds();
     Difficulty difficulty;
@@ -51,6 +51,7 @@ public:
     int spiritfire_cd, spiritfire_cd2 = 0;
     int redfire_cd = 0;
     int seal_wall_cd = 0;
+    bool did_use_shield = false;
 };
 
 #endif

@@ -30,11 +30,14 @@ void Game::Init(){//start okna
     hitbox_t.loadFromFile("../Files/hitbox.png");
     bullet_t.loadFromFile("../Files/bullet.png");
     boss_t.loadFromFile("../Files/boss.png");
+    bossr_t.loadFromFile("../Files/bossr.png");
     boss_hp_bar_t.loadFromFile("../Files/hp_bar.png");
     spiritfire_t.loadFromFile("../Files/spiritfire2.png");
     redfire_t.loadFromFile("../Files/redfire.png");
     seal1_t.loadFromFile("../Files/aaaa.png");
     seal2_t.loadFromFile("../Files/eeee.png");
+    shieldm_t.loadFromFile("../Files/dzwoneczek.png");
+    shieldo_t.loadFromFile("../Files/dzownek_z_kokarda.png");
 
     window = new sf::RenderWindow(sf::VideoMode(800, 600), "CBT Suzuha", sf::Style::Close);
     window->setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
@@ -135,23 +138,24 @@ void Game::Update(){//logika gry
             if(boss->checkCollision(player_bullet_vec[i])){
                 player_bullet_vec.erase(player_bullet_vec.begin()+i);
                 boss->hitpoints -= 1;
+                did_use_shield = false;
                 boss_hp_bar->sprite.setScale(boss->hitpoints/boss->max_hitpoints*1.0f, 1);
             }
             if(wall_top->checkCollision(player_bullet_vec[i])){
                 player_bullet_vec.erase(player_bullet_vec.begin()+i);
             }
+            for(size_t j = 0; j < shield_vec.size(); j++){
+                if(player_bullet_vec[i]->checkCollision(shield_vec[j])){
+                    player_bullet_vec.erase(player_bullet_vec.begin()+i);
+                    shield_vec.erase(shield_vec.begin()+j);
+                }
+                if(shield_vec[j]->checkCollision(player_hitbox)){
+                    game_over = true;
+                }
+            }
         }
 
         boss->Update(deltaTime);
-        if(boss->target_position_x == boss->sprite.getPosition().x){
-            //do nothing
-        }else{
-            if(boss->target_position_x < boss->sprite.getPosition().x){
-                boss->sprite.move(-1, 0);
-            }else{
-                boss->sprite.move(1, 0);
-            }
-        }
         if(boss->target_position_y == boss->sprite.getPosition().y){
             //do nothing
         }else{
@@ -159,6 +163,19 @@ void Game::Update(){//logika gry
                 boss->sprite.move(0, -1);
             }else{
                 boss->sprite.move(0, 1);
+            }
+        }
+        if(boss->target_position_x == boss->sprite.getPosition().x){
+            boss->sprite.setTexture(boss_t);
+        }else{
+            if(boss->target_position_x < boss->sprite.getPosition().x){
+                boss->sprite.setTexture(bossr_t);
+                boss->sprite.setScale(-1, 1);
+                boss->sprite.move(-1, 0);
+            }else{
+                boss->sprite.setTexture(bossr_t);
+                boss->sprite.setScale(1, 1);
+                boss->sprite.move(1, 0);
             }
         }
         if(spiritfire_cd > 120){
@@ -189,18 +206,18 @@ void Game::Update(){//logika gry
                 new Entity(boss->sprite.getPosition().x, boss->sprite.getPosition().y, &redfire_t, window));
             redfire_vec.push_front(
                 new Entity(boss->sprite.getPosition().x, boss->sprite.getPosition().y, &redfire_t, window));
-            redfire_vec[0]->sprite.setRotation(30);
-            redfire_vec[2]->sprite.setRotation(330);
+            redfire_vec[0]->sprite.setRotation(15);
+            redfire_vec[2]->sprite.setRotation(345);
             redfire_cd = 0;
         }
         for(size_t i = 0; i < redfire_vec.size(); i++){
-            if(redfire_vec[i]->sprite.getRotation() == 330){
+            if(redfire_vec[i]->sprite.getRotation() == 345){
                 redfire_vec[i]->sprite.move(0.5f, 3);
             }
             if(redfire_vec[i]->sprite.getRotation() == 0){
                 redfire_vec[i]->sprite.move(0, 3);
             }
-            if(redfire_vec[i]->sprite.getRotation() == 30){
+            if(redfire_vec[i]->sprite.getRotation() == 15){
                 redfire_vec[i]->sprite.move(-0.5f, 3);
             }
             if(redfire_vec[i]->checkCollision(player_hitbox)){
@@ -211,22 +228,50 @@ void Game::Update(){//logika gry
                 redfire_vec.erase(redfire_vec.begin()+i);
             }
         }
-        if(seal_wall_cd == 2000){
-            for(int i = 0; i <= 590; i += 60){
+        if(seal_wall_cd == 1200){
+            for(int i = 0; i <= 8; i++){
                 seal_vec.push_back(
-                        new Entity(i+14, 14, &seal1_t, window));
+                    new Entity(rand()%567+14, 14, &seal1_t, window));
                 seal_vec.push_back(
-                        new Entity(i+44, 14, &seal2_t, window));
+                    new Entity(rand()%567+14, 14, &seal2_t, window));
             }
             seal_wall_cd = 0;
         }
         for(size_t i = 0; i < seal_vec.size(); i++){
             seal_vec[i]->sprite.move(0, 1);
+            if(seal_vec[i]->sprite.getTexture() == &seal1_t){
+                seal_vec[i]->sprite.rotate(2);
+            }
+            if(seal_vec[i]->sprite.getTexture() == &seal2_t){
+                seal_vec[i]->sprite.rotate(-2);
+            }
             if(seal_vec[i]->checkCollision(player_hitbox)){
                 game_over = true;
             }
             if(wall_bottom->checkCollision(seal_vec[i])){
                 seal_vec.erase(seal_vec.begin()+i);
+            }
+        }
+        if(static_cast<int>(boss->hitpoints)%20 == 0 && !did_use_shield && boss->hitpoints != boss->max_hitpoints){
+            shield_vec.push_back(
+                new Entity(boss->sprite.getPosition().x-27, boss->sprite.getPosition().y+40, &shieldo_t, window));
+            shield_vec.push_back(
+                new Entity(boss->sprite.getPosition().x-18, boss->sprite.getPosition().y+45, &shieldm_t, window));
+            shield_vec.push_back(
+                new Entity(boss->sprite.getPosition().x-9, boss->sprite.getPosition().y+50, &shieldm_t, window));
+            shield_vec.push_back(
+                new Entity(boss->sprite.getPosition().x, boss->sprite.getPosition().y+55, &shieldo_t, window));
+            shield_vec.push_back(
+                new Entity(boss->sprite.getPosition().x+9, boss->sprite.getPosition().y+50, &shieldm_t, window));
+            shield_vec.push_back(
+                new Entity(boss->sprite.getPosition().x+18, boss->sprite.getPosition().y+45, &shieldm_t, window));
+            shield_vec.push_back(
+                new Entity(boss->sprite.getPosition().x+27, boss->sprite.getPosition().y+40, &shieldo_t, window));
+            did_use_shield = true;
+        }
+        for(size_t i = 0; i < shield_vec.size(); i++){
+            if(shield_vec[i]->checkCollision(player_hitbox)){
+                game_over = true;
             }
         }
 
@@ -267,6 +312,9 @@ void Game::Draw(){//self-explanatory
             i->Draw();
         }
         for(auto i : seal_vec){
+            i->Draw();
+        }
+        for(auto i : shield_vec){
             i->Draw();
         }
         boss->Draw();
@@ -321,9 +369,12 @@ void Game::Stop(){//self-explanatory
         delete i;
     }
     redfire_vec.clear();
-    seal_vec.clear();
     for(auto i : seal_vec){
         delete i;
     }
     seal_vec.clear();
+    for(auto i : shield_vec){
+        delete i;
+    }
+    shield_vec.clear();
 }

@@ -33,6 +33,8 @@ void Game::Init(){//start okna
     boss_hp_bar_t.loadFromFile("../Files/hp_bar.png");
     spiritfire_t.loadFromFile("../Files/spiritfire2.png");
     redfire_t.loadFromFile("../Files/redfire.png");
+    seal1_t.loadFromFile("../Files/aaaa.png");
+    seal2_t.loadFromFile("../Files/eeee.png");
 
     window = new sf::RenderWindow(sf::VideoMode(800, 600), "CBT Suzuha", sf::Style::Close);
     window->setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
@@ -180,7 +182,6 @@ void Game::Update(){//logika gry
                 spiritfire_vec.erase(spiritfire_vec.begin()+i);
             }
         }
-
         if(redfire_cd > 80 && spiritfire_cd2 == 0){
             redfire_vec.push_front(
                 new Entity(boss->sprite.getPosition().x, boss->sprite.getPosition().y, &redfire_t, window));
@@ -210,6 +211,24 @@ void Game::Update(){//logika gry
                 redfire_vec.erase(redfire_vec.begin()+i);
             }
         }
+        if(seal_wall_cd == 2000){
+            for(int i = 0; i <= 590; i += 60){
+                seal_vec.push_back(
+                        new Entity(i+14, 14, &seal1_t, window));
+                seal_vec.push_back(
+                        new Entity(i+44, 14, &seal2_t, window));
+            }
+            seal_wall_cd = 0;
+        }
+        for(size_t i = 0; i < seal_vec.size(); i++){
+            seal_vec[i]->sprite.move(0, 1);
+            if(seal_vec[i]->checkCollision(player_hitbox)){
+                game_over = true;
+            }
+            if(wall_bottom->checkCollision(seal_vec[i])){
+                seal_vec.erase(seal_vec.begin()+i);
+            }
+        }
 
         if(player->checkCollision(boss) || boss->hitpoints == 0){
             game_over = true;
@@ -223,6 +242,7 @@ void Game::Update(){//logika gry
         Bullet_spawn_cooldown += 1;
         spiritfire_cd += 1;
         redfire_cd += 1;
+        seal_wall_cd += 1;
     }
 
 }
@@ -235,6 +255,8 @@ void Game::Draw(){//self-explanatory
     wall_top->Draw();
     wall_bottom->Draw();
     if(isGameRunning){
+        player->Draw();
+        player_hitbox->Draw();
         for(auto i : player_bullet_vec){
             i->Draw();
         }
@@ -244,8 +266,9 @@ void Game::Draw(){//self-explanatory
         for(auto i : redfire_vec){
             i->Draw();
         }
-        player->Draw();
-        player_hitbox->Draw();
+        for(auto i : seal_vec){
+            i->Draw();
+        }
         boss->Draw();
         boss_hp_bar->Draw();
     }
@@ -298,4 +321,9 @@ void Game::Stop(){//self-explanatory
         delete i;
     }
     redfire_vec.clear();
+    seal_vec.clear();
+    for(auto i : seal_vec){
+        delete i;
+    }
+    seal_vec.clear();
 }

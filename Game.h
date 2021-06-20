@@ -14,9 +14,12 @@
 class Game{
 private:
     float deltaTime{};
-    int timer;
     sf::Image icon;
     sf::Music music;
+    sf::Font* fontg;
+    sf::Text* welcome;
+    sf::Text* game_over;
+    sf::Text* game_win;
     sf::Texture player_t, hitbox_t, bullet_t, boss_t, bossr_t, wall_t, boss_hp_bar_t;
     sf::Texture spiritfire_t, redfire_t, seal1_t, seal2_t, shieldm_t, shieldo_t;
     Entity* wall_top{};
@@ -47,6 +50,8 @@ public:
     std::chrono::milliseconds getMilliseconds();
     void StartGame();
     void Stop();
+    bool bwelcome = true;
+    bool blose, bwin = false;
     int Bullet_spawn_cooldown = 0;
     int spiritfire_cd, spiritfire_cd2 = 0;
     int redfire_cd = 0;

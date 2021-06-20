@@ -6,6 +6,7 @@ Game::Game(){
 Game::~Game(){
     Stop();
     delete menu;
+    delete fontg;
     delete wall_top;
     delete wall_right;
     delete wall_bottom;
@@ -23,6 +24,8 @@ void Game::Init(){//start okna
     HWND hwnd = GetConsoleWindow(); //testing
     ShowWindow(hwnd, SW_HIDE);
 
+    fontg = new sf::Font;
+    fontg->loadFromFile("../Files/arial.ttf");
     icon.loadFromFile("../Files/super_ikonka_super_gierki.png");
     music.openFromFile("../Files/suzuha_ost.ogg");
     wall_t.loadFromFile("../Files/wall.png");
@@ -42,6 +45,16 @@ void Game::Init(){//start okna
     window = new sf::RenderWindow(sf::VideoMode(800, 600), "CBT Suzuha", sf::Style::Close);
     window->setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
     window->setFramerateLimit(60);
+
+    welcome = new sf::Text("WELCOME\n\n\nArrows to move\nHold X to shoot\nHave fun!", *fontg, 48);
+    welcome->setOrigin(welcome->getGlobalBounds().width/2, welcome->getGlobalBounds().height/2);
+    welcome->setPosition(300, 300);
+    game_over = new sf::Text("GAME OVER\n  TRY AGAIN", *fontg, 72);
+    game_over->setOrigin(game_over->getGlobalBounds().width/2, game_over->getGlobalBounds().height/2);
+    game_over->setPosition(300, 275);
+    game_win = new sf::Text("YOU WIN", *fontg, 72);
+    game_win->setOrigin(game_win->getGlobalBounds().width/2, game_win->getGlobalBounds().height/2);
+    game_win->setPosition(300, 280);
 
     wall_top = new Entity(300, 5, &wall_t, window);
     wall_right = new Entity(595, 300, &wall_t, window);
@@ -67,7 +80,8 @@ void Game::Update(){//logika gry
     deltaTime = (endOfFrameTime-current_time).count()*0.001;
     current_time = getMilliseconds();
 
-    bool game_over = false;
+    bool game_over_lose = false;
+    bool game_over_win = false;
 
     sf::Event event{};
     while(window->pollEvent(event)){
@@ -150,7 +164,7 @@ void Game::Update(){//logika gry
                     shield_vec.erase(shield_vec.begin()+j);
                 }
                 if(shield_vec[j]->checkCollision(player_hitbox)){
-                    game_over = true;
+                    game_over_lose = true;
                 }
             }
         }
@@ -170,11 +184,11 @@ void Game::Update(){//logika gry
         }else{
             if(boss->target_position_x < boss->sprite.getPosition().x){
                 boss->sprite.setTexture(bossr_t);
-                boss->sprite.setScale(-1, 1);
+                boss->sprite.setScale(1, 1);
                 boss->sprite.move(-1, 0);
             }else{
                 boss->sprite.setTexture(bossr_t);
-                boss->sprite.setScale(1, 1);
+                boss->sprite.setScale(-1, 1);
                 boss->sprite.move(1, 0);
             }
         }
@@ -193,26 +207,29 @@ void Game::Update(){//logika gry
         for(size_t i = 0; i < spiritfire_vec.size(); i++){
             spiritfire_vec[i]->sprite.move(0, 4);
             if(spiritfire_vec[i]->checkCollision(player_hitbox)){
-                game_over = true;
+                game_over_lose = true;
             }
             if(wall_bottom->checkCollision(spiritfire_vec[i])){
                 spiritfire_vec.erase(spiritfire_vec.begin()+i);
             }
         }
         if(redfire_cd > 80 && spiritfire_cd2 == 0){
-            redfire_vec.push_front(
-                new Entity(boss->sprite.getPosition().x, boss->sprite.getPosition().y, &redfire_t, window));
-            redfire_vec.push_front(
-                new Entity(boss->sprite.getPosition().x, boss->sprite.getPosition().y, &redfire_t, window));
-            redfire_vec.push_front(
-                new Entity(boss->sprite.getPosition().x, boss->sprite.getPosition().y, &redfire_t, window));
-            redfire_vec[0]->sprite.setRotation(15);
-            redfire_vec[2]->sprite.setRotation(345);
+            for(int i = 0; i < 5; i++){
+                redfire_vec.push_front(
+                    new Entity(boss->sprite.getPosition().x, boss->sprite.getPosition().y, &redfire_t, window));
+            }
+            redfire_vec[0]->sprite.setRotation(45);
+            redfire_vec[1]->sprite.setRotation(15);
+            redfire_vec[3]->sprite.setRotation(345);
+            redfire_vec[4]->sprite.setRotation(315);
             redfire_cd = 0;
         }
         for(size_t i = 0; i < redfire_vec.size(); i++){
             if(redfire_vec[i]->sprite.getRotation() == 345){
                 redfire_vec[i]->sprite.move(0.5f, 3);
+            }
+            if(redfire_vec[i]->sprite.getRotation() == 315){
+                redfire_vec[i]->sprite.move(1.f, 3);
             }
             if(redfire_vec[i]->sprite.getRotation() == 0){
                 redfire_vec[i]->sprite.move(0, 3);
@@ -220,8 +237,11 @@ void Game::Update(){//logika gry
             if(redfire_vec[i]->sprite.getRotation() == 15){
                 redfire_vec[i]->sprite.move(-0.5f, 3);
             }
+            if(redfire_vec[i]->sprite.getRotation() == 45){
+                redfire_vec[i]->sprite.move(-1.f, 3);
+            }
             if(redfire_vec[i]->checkCollision(player_hitbox)){
-                game_over = true;
+                game_over_lose = true;
             }
             if(wall_left->checkCollision(redfire_vec[i]) || wall_bottom->checkCollision(redfire_vec[i])
                 || wall_right->checkCollision(redfire_vec[i])){
@@ -246,7 +266,7 @@ void Game::Update(){//logika gry
                 seal_vec[i]->sprite.rotate(-2);
             }
             if(seal_vec[i]->checkCollision(player_hitbox)){
-                game_over = true;
+                game_over_lose = true;
             }
             if(wall_bottom->checkCollision(seal_vec[i])){
                 seal_vec.erase(seal_vec.begin()+i);
@@ -271,16 +291,26 @@ void Game::Update(){//logika gry
         }
         for(size_t i = 0; i < shield_vec.size(); i++){
             if(shield_vec[i]->checkCollision(player_hitbox)){
-                game_over = true;
+                game_over_lose = true;
             }
         }
 
-        if(player->checkCollision(boss) || boss->hitpoints == 0){
-            game_over = true;
+        if(player->checkCollision(boss)){
+            game_over_lose = true;
         }
 
-        if(game_over){
+        if(boss->hitpoints == 0){
+            game_over_win = true;
+        }
+
+        if(game_over_lose){
             Stop();
+            blose = true;
+            return;
+        }
+        if(game_over_win){
+            Stop();
+            bwin = true;
             return;
         }
 
@@ -320,6 +350,15 @@ void Game::Draw(){//self-explanatory
         boss->Draw();
         boss_hp_bar->Draw();
     }
+    if(bwelcome){
+        window->draw(*welcome);
+    }
+    if(blose){
+        window->draw(*game_over);
+    }
+    if(bwin){
+        window->draw(*game_win);
+    }
     window->display();
 }
 
@@ -332,6 +371,9 @@ std::chrono::milliseconds Game::getMilliseconds(){//full profeska
 }
 
 void Game::StartGame(){//tworzenie stuffu
+    bwelcome = false;
+    blose = false;
+    bwin = false;
     isGameRunning = true;
 
     difficulty = menu->selected_difficulty;

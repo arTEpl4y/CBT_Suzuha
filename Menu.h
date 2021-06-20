@@ -29,7 +29,7 @@ public:
     //void SaveHighscore();
     void Draw();
     void CheckButtonPresses(sf::Event::MouseButtonEvent* mouse_event);
-    bool RequestedQuit();
+    bool RequestedQuit() const;
     bool RequestedStartGame();
     Difficulty selected_difficulty = NORMAL;
 };

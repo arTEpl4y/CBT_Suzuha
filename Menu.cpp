@@ -2,7 +2,7 @@
 
 Menu::Menu(sf::RenderWindow* window){
     font = new sf::Font;
-    font->loadFromFile("../arial.ttf");
+    font->loadFromFile("../Files/arial.ttf");
 
     start_game = new Button(700, 400, 130, 50, sf::Color(128, 128, 128), "NEW GAME", font, window);
     difficulties = new Button(700, 475, 130, 50, sf::Color(128, 128, 128), "SPEED", font, window);
@@ -89,7 +89,7 @@ void Menu::CheckButtonPresses(sf::Event::MouseButtonEvent *mouse_event){
     }
 }
 
-bool Menu::RequestedQuit(){
+bool Menu::RequestedQuit() const{
     return quit_requested;
 }
 
